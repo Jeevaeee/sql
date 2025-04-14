@@ -1,0 +1,66 @@
+-- Users Table
+CREATE TABLE Users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL
+);
+
+-- Sensor Data Table
+CREATE TABLE Sensor_Data (
+    data_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    temperature FLOAT,
+    humidity FLOAT,
+    moisture_level FLOAT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+-- Watering History Table
+CREATE TABLE Watering_History (
+    watering_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    water_amount_ml INT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+-- Notifications Table
+CREATE TABLE Notifications (
+    notification_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    message TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
+
+-- Inserting into Users
+INSERT INTO Users (username, email, password)
+VALUES ('gardener01', 'garden01@example.com', 'pass123');
+
+-- Inserting Sensor Data
+INSERT INTO Sensor_Data (user_id, temperature, humidity, moisture_level)
+VALUES (1, 30.5, 65.2, 20.4);
+
+-- Inserting Watering History
+INSERT INTO Watering_History (user_id, water_amount_ml)
+VALUES (1, 500);
+
+-- Inserting Notification
+INSERT INTO Notifications (user_id, message)
+VALUES (1, 'Moisture level is low. Auto-watering initiated.');
+
+-- View sensor data for a user
+SELECT * FROM Sensor_Data WHERE user_id = 1;
+
+-- Average moisture level in past week
+SELECT AVG(moisture_level) AS avg_moisture
+FROM Sensor_Data
+WHERE timestamp >= NOW() - INTERVAL 7 DAY;
+
+-- List watering events
+SELECT * FROM Watering_History WHERE user_id = 1 ORDER BY timestamp DESC;
+
+-- Get recent notifications
+SELECT * FROM Notifications WHERE user_id = 1 ORDER BY timestamp DESC LIMIT 5;
